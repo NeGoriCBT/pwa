@@ -97,7 +97,10 @@
             width: 100%;
             max-width: 100%;
             min-width: 0;
-            padding: clamp(1rem, 3vw, 1.75rem);
+            box-sizing: border-box;
+            /* только по высоте: больше воздуха сверху/снизу, ширина через padding-inline */
+            padding-block: clamp(1.5rem, 4.5vw, 2.75rem);
+            padding-inline: clamp(1rem, 3vw, 1.75rem);
             background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.18) 55%, transparent 85%);
             border-radius: 6px;
             isolation: isolate;
@@ -298,7 +301,9 @@
                 padding-bottom: 0.22em;
             }
             .hero-vga {
-                padding: clamp(1.4rem, 4.2vw, 2.15rem) clamp(0.6rem, 2.8vw, 1rem);
+                padding-block: clamp(2rem, 6vw, 3.25rem);
+                padding-inline: clamp(0.6rem, 2.8vw, 1rem);
+                min-height: min(52vh, 28rem);
                 border-radius: 8px;
             }
             .hero-vga .smoky-text {
@@ -328,7 +333,9 @@
                 padding-bottom: 0.25em;
             }
             .hero-vga {
-                padding: clamp(1.45rem, 4.5vw, 2.25rem) clamp(0.5rem, 2.5vw, 0.9rem);
+                padding-block: clamp(2.15rem, 6.5vw, 3.5rem);
+                padding-inline: clamp(0.5rem, 2.5vw, 0.9rem);
+                min-height: min(54vh, 30rem);
             }
             .hero-vga .smoky-text {
                 line-height: 1.92;
@@ -1297,7 +1304,7 @@
         }
         .fsmenu .fsmenu--container .fsmenu--list .fsmenu--list-element {
             width: 100%;
-            height: 25%;
+            height: 20%;
             list-style-type: none;
             text-align: right;
             position: relative;
@@ -1552,6 +1559,19 @@
                             <div class="fsmenu--link-img">
                                 <div class="fsmenu--img-container">
                                     <img src="https://picsum.photos/id/42/624/800" alt="menu image">
+                                </div>
+                            </div>
+                        </li>
+                        <li class="fsmenu--list-element" data-img="https://picsum.photos/id/180/624/800">
+                            <a href="./index.html?app=1">
+                                <span>Дашборд</span>
+                            </a>
+                            <div class="fsmenu--scrolling-text">
+                                <span>DASHBOARD // DASHBOARD // DASHBOARD //</span>
+                            </div>
+                            <div class="fsmenu--link-img">
+                                <div class="fsmenu--img-container">
+                                    <img src="https://picsum.photos/id/180/624/800" alt="">
                                 </div>
                             </div>
                         </li>
