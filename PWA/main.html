@@ -1825,8 +1825,13 @@
         const UNLOCK_CRAWL_PROGRESS = 0.1;
         const UNLOCK_CRAWL_PROGRESS_MOBILE = 1;
 
+        /** 100%: узкий экран ИЛИ телефон в ландшафте (>768px, но coarse pointer). Иначе 10% давало ранний unlock → «замирание» титров ~10–14% и сразу скролл страницы. */
         function getUnlockProgressThreshold() {
-            if (window.matchMedia("(max-width: 768px)").matches) {
+            const narrow = window.matchMedia("(max-width: 768px)").matches;
+            const phoneOrTabletTouch =
+                window.matchMedia("(pointer: coarse)").matches &&
+                window.matchMedia("(max-width: 1024px)").matches;
+            if (narrow || phoneOrTabletTouch) {
                 return UNLOCK_CRAWL_PROGRESS_MOBILE;
             }
             return UNLOCK_CRAWL_PROGRESS;
@@ -1880,7 +1885,12 @@
 
         function tryUnlockFromCrawlProgress(p) {
             if (!crawlScrollLocked || crawlScrollUnlockDone) return;
-            if (p + 1e-6 < getUnlockProgressThreshold()) return;
+            const th = getUnlockProgressThreshold();
+            if (th >= 0.999) {
+                if (p < 0.998) return;
+            } else if (p + 1e-6 < th) {
+                return;
+            }
             unlockCrawlBodyScroll();
         }
 
