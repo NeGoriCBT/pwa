@@ -268,12 +268,12 @@
                 min-height: 0;
                 justify-content: space-between;
                 box-sizing: border-box;
-                padding-top: 0.15em;
-                padding-bottom: 0.15em;
                 /* min(...): самая длинная строка nowrap («вселенная») не шире окна с учётом отступов */
                 font-size: min(clamp(2.15rem, 11vw, 4.35rem), calc((100vw - 6rem) / 9));
-                line-height: 1.18;
-                gap: 0.09em;
+                line-height: 1.4;
+                gap: 0.2em;
+                padding-top: 0.22em;
+                padding-bottom: 0.22em;
             }
             .smoky-line {
                 text-align: left;
@@ -290,8 +290,10 @@
             }
             .smoky-text {
                 font-size: min(clamp(2rem, 12vw, 4.1rem), calc((100vw - 5.5rem) / 9));
-                line-height: 1.2;
-                gap: 0.1em;
+                line-height: 1.45;
+                gap: 0.22em;
+                padding-top: 0.25em;
+                padding-bottom: 0.25em;
             }
             .about-credits-viewport {
                 margin-top: clamp(0.75rem, 3vw, 1.5rem);
@@ -353,7 +355,8 @@
             }
             .smoky-text {
                 font-size: min(clamp(1.35rem, 6.5vh, 3.1rem), calc((100vw - 6rem) / 9));
-                line-height: 1.16;
+                line-height: 1.38;
+                gap: 0.16em;
             }
             .about-credits-viewport {
                 min-height: min(100dvh, 100vh);
