@@ -1823,8 +1823,12 @@
         let crawlScrollUnlockDone = false;
         const CRAWL_PROGRESS_FRAC = 3.8;
         const UNLOCK_CRAWL_PROGRESS = 0.1;
+        const UNLOCK_CRAWL_PROGRESS_MOBILE = 1;
 
         function getUnlockProgressThreshold() {
+            if (window.matchMedia("(max-width: 768px)").matches) {
+                return UNLOCK_CRAWL_PROGRESS_MOBILE;
+            }
             return UNLOCK_CRAWL_PROGRESS;
         }
 
