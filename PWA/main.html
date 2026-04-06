@@ -91,6 +91,28 @@
             justify-content: flex-start;
         }
 
+        /* Визуал как у .slide-3d__vga: градиент + белый текст с тенью; анимации .smoky-line / span::before|after не меняются */
+        .hero-vga {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            padding: clamp(1rem, 3vw, 1.75rem);
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.18) 55%, transparent 85%);
+            border-radius: 6px;
+            isolation: isolate;
+            pointer-events: none;
+        }
+
+        .hero-vga .smoky-text {
+            letter-spacing: 0.02em;
+        }
+
+        .hero-vga .smoky-text span {
+            color: #ffffff;
+            text-shadow: 0 2px 18px rgba(0, 0, 0, 0.95), 0 0 2px rgba(0, 0, 0, 0.9);
+        }
+
         .smoky-text {
             --text-reveal-duration: 0.85s;
             --word-stagger: 0.2s;
@@ -275,6 +297,16 @@
                 padding-top: 0.22em;
                 padding-bottom: 0.22em;
             }
+            .hero-vga {
+                padding: clamp(1.2rem, 3.8vw, 1.9rem) clamp(0.6rem, 2.8vw, 1rem);
+                border-radius: 8px;
+            }
+            .hero-vga .smoky-text {
+                line-height: 1.62;
+                gap: 0.32em;
+                padding-top: 0.38em;
+                padding-bottom: 0.38em;
+            }
             .smoky-line {
                 text-align: left;
                 width: auto;
@@ -294,6 +326,15 @@
                 gap: 0.22em;
                 padding-top: 0.25em;
                 padding-bottom: 0.25em;
+            }
+            .hero-vga {
+                padding: clamp(1.25rem, 4vw, 2rem) clamp(0.5rem, 2.5vw, 0.9rem);
+            }
+            .hero-vga .smoky-text {
+                line-height: 1.68;
+                gap: 0.36em;
+                padding-top: 0.42em;
+                padding-bottom: 0.42em;
             }
             .about-credits-viewport {
                 margin-top: clamp(0.75rem, 3vw, 1.5rem);
@@ -357,6 +398,10 @@
                 font-size: min(clamp(1.35rem, 6.5vh, 3.1rem), calc((100vw - 6rem) / 9));
                 line-height: 1.38;
                 gap: 0.16em;
+            }
+            .hero-vga .smoky-text {
+                line-height: 1.48;
+                gap: 0.22em;
             }
             .about-credits-viewport {
                 min-height: min(100dvh, 100vh);
@@ -1541,11 +1586,13 @@
         <div class="hero" id="home">
             <div class="hero-inner">
             <div class="text-container" id="textContainer">
+                <div class="hero-vga">
                 <div class="smoky-text" id="cosmicText">
                     <div class="smoky-line"><span>т</span><span>ы</span></div>
                     <div class="smoky-line"><span>э</span><span>т</span><span>о</span></div>
                     <div class="smoky-line"><span>ц</span><span>е</span><span>л</span><span>а</span><span>я</span></div>
                     <div class="smoky-line"><span>в</span><span>с</span><span>е</span><span>л</span><span>е</span><span>н</span><span>н</span><span>а</span><span>я</span></div>
+                </div>
                 </div>
             </div>
             </div>
