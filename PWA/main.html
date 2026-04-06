@@ -37,22 +37,18 @@
             z-index: 5;
         }
 
+        /* Первый экран в потоке прокрутки (как блок с солнечной системой), не fixed — скроллится вместе со страницей */
         .hero {
+            position: relative;
+            width: 100%;
             height: 100vh;
             min-height: 100dvh;
             display: flex;
             align-items: stretch;
             justify-content: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 8;
-            pointer-events: none;
-            overflow: visible;
             box-sizing: border-box;
             padding: 0;
-            /* transform на fixed-слое не используем — иначе в части браузеров ломается привязка к viewport */
+            overflow: visible;
         }
 
         .hero-inner {
@@ -67,14 +63,6 @@
             box-sizing: border-box;
             /* слева минимальный запас под меню; справа — от края экрана */
             padding: 0 min(2rem, 5vw) 0 clamp(4.75rem, 18vw, 11rem);
-        }
-
-        /* Резервирует высоту первого экрана в потоке прокрутки, пока титры закреплены к viewport */
-        .hero-spacer {
-            height: 100vh;
-            min-height: 100dvh;
-            width: 100%;
-            pointer-events: none;
         }
 
         .text-container {
@@ -243,11 +231,6 @@
                 padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
                 padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
             }
-            .hero-spacer {
-                height: 100dvh;
-                min-height: 100dvh;
-                max-height: 100dvh;
-            }
             .text-container {
                 justify-content: flex-start;
                 align-items: flex-start;
@@ -342,10 +325,6 @@
                 padding-top: env(safe-area-inset-top, 0px);
                 align-items: stretch;
                 justify-content: flex-start;
-            }
-            .hero-spacer {
-                height: min(100dvh, 100vh);
-                min-height: min(100dvh, 100vh);
             }
             .smoky-text {
                 font-size: clamp(1.15rem, 5.5vh, 2.75rem);
@@ -1529,21 +1508,19 @@
         </ul>
     </div>
 
-    <div class="hero">
-        <div class="hero-inner">
-        <div class="text-container" id="textContainer">
-            <div class="smoky-text" id="cosmicText">
-                <div class="smoky-line"><span>т</span><span>ы</span></div>
-                <div class="smoky-line"><span>э</span><span>т</span><span>о</span></div>
-                <div class="smoky-line"><span>ц</span><span>е</span><span>л</span><span>а</span><span>я</span></div>
-                <div class="smoky-line"><span>в</span><span>с</span><span>е</span><span>л</span><span>е</span><span>н</span><span>н</span><span>а</span><span>я</span></div>
+    <div class="scroll-content">
+        <div class="hero" id="home">
+            <div class="hero-inner">
+            <div class="text-container" id="textContainer">
+                <div class="smoky-text" id="cosmicText">
+                    <div class="smoky-line"><span>т</span><span>ы</span></div>
+                    <div class="smoky-line"><span>э</span><span>т</span><span>о</span></div>
+                    <div class="smoky-line"><span>ц</span><span>е</span><span>л</span><span>а</span><span>я</span></div>
+                    <div class="smoky-line"><span>в</span><span>с</span><span>е</span><span>л</span><span>е</span><span>н</span><span>н</span><span>а</span><span>я</span></div>
+                </div>
+            </div>
             </div>
         </div>
-        </div>
-    </div>
-
-    <div class="scroll-content">
-        <div id="home" class="hero-spacer" aria-hidden="true"></div>
 
         <section id="about">
             <div class="about-inner">
