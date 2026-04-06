@@ -73,7 +73,7 @@
             --ty-curtain-delay: calc(3 * var(--word-stagger) + var(--text-reveal-duration) - var(--curtain-phase1) - var(--curtain-pause));
             --curtain-line-gap: 0.45s;
             font-family: "Rubik Mono One", ui-monospace, monospace;
-            font-size: clamp(1.75rem, 8vw, 5.75rem);
+            font-size: clamp(2rem, 9vw, 6.25rem);
             font-weight: 400;
             line-height: 1.1;
             text-align: left;
@@ -206,46 +206,52 @@
 
         @media (max-width: 768px) {
             .hero {
-                justify-content: center;
-                align-items: center;
+                height: 100dvh;
+                min-height: 100dvh;
+                max-height: 100dvh;
+                align-items: stretch;
+                justify-content: flex-start;
                 padding-left: max(clamp(3rem, 14vw, 5.5rem), env(safe-area-inset-left, 0px));
                 padding-right: max(min(1rem, 4vw), env(safe-area-inset-right, 0px));
-                padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+                padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+                padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
             }
             .text-container {
-                justify-content: center;
-                align-items: center;
-                max-width: 100%;
+                justify-content: flex-start;
+                align-items: flex-start;
+                align-self: stretch;
                 width: 100%;
+                max-width: 100%;
+                min-height: 0;
+                flex: 1;
+                height: 100%;
             }
             .smoky-text {
-                align-items: center;
+                align-items: flex-start;
+                text-align: left;
                 width: 100%;
-                max-width: min(100%, 100vw);
-                text-align: center;
-                font-size: clamp(1.35rem, 7.2vw, 3rem);
+                height: 100%;
+                min-height: 0;
+                justify-content: space-between;
+                box-sizing: border-box;
+                padding-top: 0.15em;
+                padding-bottom: 0.15em;
+                font-size: clamp(1.85rem, 9.5vw, 3.75rem);
             }
             .smoky-line {
-                text-align: center;
-                width: 100%;
+                text-align: left;
+                width: auto;
             }
         }
 
         /* ---------- Адаптация по размеру экрана (ширина / высота / safe-area) ---------- */
         @media (max-width: 480px) {
             .hero {
-                justify-content: center;
-                align-items: center;
                 padding-left: max(clamp(2.75rem, 11vw, 4.25rem), env(safe-area-inset-left, 0px));
                 padding-right: max(min(0.75rem, 3vw), env(safe-area-inset-right, 0px));
-                padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
-            }
-            .text-container {
-                max-width: 100%;
-                justify-content: center;
             }
             .smoky-text {
-                font-size: clamp(1.25rem, 6.8vw, 2.75rem);
+                font-size: clamp(1.75rem, 10vw, 3.5rem);
             }
             .about-credits-viewport {
                 margin-top: clamp(0.75rem, 3vw, 1.5rem);
@@ -299,11 +305,11 @@
             .hero {
                 height: min(100dvh, 100vh);
                 padding-top: env(safe-area-inset-top, 0px);
-                justify-content: center;
-                align-items: center;
+                align-items: stretch;
+                justify-content: flex-start;
             }
             .smoky-text {
-                font-size: clamp(1rem, 5vh, 2.5rem);
+                font-size: clamp(1.15rem, 5.5vh, 2.75rem);
             }
             .about-credits-viewport {
                 min-height: min(100dvh, 100vh);
@@ -1576,17 +1582,6 @@
         // ==================== КОСМИЧЕСКАЯ АНИМАЦИЯ ====================
         const textElement = document.getElementById('cosmicText');
         const letters = textElement.querySelectorAll('span');
-        const letterParams = [];
-        letters.forEach((letter, i) => {
-            const isEven = i % 2 === 0;
-            letterParams.push({
-                translateX: 0,
-                translateY: -8 - Math.random() * 5,
-                rotate: isEven ? -15 - Math.random() * 10 : -15 - Math.random() * 10,
-                skewX: isEven ? 15 + Math.random() * 15 : -(15 + Math.random() * 15),
-                scale: 1.2 + Math.random() * 0.5,
-            });
-        });
 
         function refreshAboutCrawlKeyframes() {
             const content = document.getElementById("aboutCrawlContent");
@@ -1647,46 +1642,13 @@
         }
 
         function updateTextAnimation(scrollY) {
-            const textContainer = document.getElementById('textContainer');
+            const textContainer = document.getElementById("textContainer");
             if (!textContainer) return;
-            const vh = window.innerHeight;
-            if (scrollY > vh * 0.95) {
-                textContainer.style.transform = "";
-                letters.forEach((letter) => {
-                    letter.style.opacity = "0";
-                    letter.style.textShadow = "none";
-                });
-                return;
-            }
-            const maxScroll = vh * 0.6;
-            const progress = Math.min(1, Math.max(0, scrollY / maxScroll));
-            const eased = Math.pow(progress, 1.05);
-            const liftProgress = Math.min(1, scrollY / (window.innerHeight * 0.4));
-            const containerOffset = -liftProgress * (window.innerHeight * 0.3);
-            textContainer.style.transform = `translateY(${containerOffset}px)`;
-            letters.forEach((letter, index) => {
-                const params = letterParams[index];
-                const ty = params.translateY * eased;
-                const rot = params.rotate * eased;
-                const skew = params.skewX * eased;
-                const scaleVal = 1 + (params.scale - 1) * eased;
-                let textShadow = '0 0 0 white';
-                let opacity = 1;
-                if (eased < 0.6) {
-                    const glowIntensity = (eased / 0.6) * 40;
-                    textShadow = `0 0 ${glowIntensity}px white`;
-                    opacity = 1;
-                } else if (eased < 0.85) {
-                    const glowIntensity = 40 - ((eased - 0.6) / 0.25) * 20;
-                    textShadow = `0 0 ${Math.max(0, glowIntensity)}px white`;
-                    opacity = 1 - (eased - 0.6) / 0.25;
-                } else {
-                    textShadow = '0 0 20px white';
-                    opacity = 0;
-                }
-                letter.style.transform = `translate3d(0rem, ${ty}rem, 0) rotate(${rot}deg) skewX(${skew}deg) scale(${scaleVal})`;
-                letter.style.opacity = opacity;
-                letter.style.textShadow = textShadow;
+            textContainer.style.transform = "";
+            letters.forEach((letter) => {
+                letter.style.opacity = "1";
+                letter.style.textShadow = "none";
+                letter.style.transform = "";
             });
         }
 
