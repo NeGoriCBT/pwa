@@ -716,14 +716,17 @@
                 padding: 0 0.35rem;
             }
 
-            .carousel-3d-left,
-            .carousel-3d-right {
-                display: none;
+            .wrapper-3d-inner {
+                perspective: 220px;
+                width: 100%;
             }
 
-            .wrapper-3d-inner {
-                perspective: none;
-                width: 100%;
+            .carousel-3d-left {
+                transform: rotateY(92deg) translateZ(0);
+            }
+
+            .carousel-3d-right {
+                transform: rotateY(-92deg) translateZ(0);
             }
 
             .carousel-3d-wrapper {
