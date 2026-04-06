@@ -19,7 +19,16 @@
             box-sizing: border-box;
         }
 
+        html {
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100%;
+        }
+
         body {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
             width: 100%;
             max-width: 100%;
             min-height: 100vh;
@@ -35,12 +44,16 @@
             min-height: 300vh;
             position: relative;
             z-index: 5;
+            max-width: 100%;
+            overflow-x: hidden;
+            overflow-x: clip;
         }
 
         /* Первый экран в потоке прокрутки (как блок с солнечной системой), не fixed — скроллится вместе со страницей */
         .hero {
             position: relative;
             width: 100%;
+            max-width: 100%;
             height: 100vh;
             min-height: 100dvh;
             display: flex;
@@ -48,12 +61,15 @@
             justify-content: center;
             box-sizing: border-box;
             padding: 0;
-            overflow: visible;
+            overflow-x: hidden;
+            overflow-x: clip;
+            overflow-y: visible;
         }
 
         .hero-inner {
             width: 100%;
-            max-width: 1600px;
+            min-width: 0;
+            max-width: min(100%, 1600px);
             margin-left: auto;
             margin-right: auto;
             height: 100%;
@@ -69,7 +85,8 @@
             position: relative;
             will-change: transform;
             width: 100%;
-            max-width: min(96vw, 980px);
+            max-width: min(100%, 980px);
+            min-width: 0;
             display: flex;
             justify-content: flex-start;
         }
@@ -245,19 +262,23 @@
                 align-items: flex-start;
                 text-align: left;
                 width: 100%;
+                max-width: 100%;
+                min-width: 0;
                 height: 100%;
                 min-height: 0;
                 justify-content: space-between;
                 box-sizing: border-box;
                 padding-top: 0.15em;
                 padding-bottom: 0.15em;
-                font-size: clamp(2.15rem, 11vw, 4.35rem);
+                /* min(...): самая длинная строка nowrap («вселенная») не шире окна с учётом отступов */
+                font-size: min(clamp(2.15rem, 11vw, 4.35rem), calc((100vw - 6rem) / 9));
                 line-height: 1.18;
                 gap: 0.09em;
             }
             .smoky-line {
                 text-align: left;
                 width: auto;
+                max-width: 100%;
             }
         }
 
@@ -268,7 +289,7 @@
                 padding-right: max(min(0.75rem, 3vw), env(safe-area-inset-right, 0px));
             }
             .smoky-text {
-                font-size: clamp(2rem, 12vw, 4.1rem);
+                font-size: min(clamp(2rem, 12vw, 4.1rem), calc((100vw - 5.5rem) / 9));
                 line-height: 1.2;
                 gap: 0.1em;
             }
@@ -331,7 +352,7 @@
                 justify-content: flex-start;
             }
             .smoky-text {
-                font-size: clamp(1.35rem, 6.5vh, 3.1rem);
+                font-size: min(clamp(1.35rem, 6.5vh, 3.1rem), calc((100vw - 6rem) / 9));
                 line-height: 1.16;
             }
             .about-credits-viewport {
