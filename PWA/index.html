@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1f2a44">
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" type="text/css">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+  <title>CBT Diary PWA</title>
+  <script>
+    if (!window.location.search.includes("app=1")) {
+      window.location.replace("./main.html");
+    }
+  </script>
+</head>
+<body>
+  <div id="stars-static"></div>
+  <div id="stars"></div>
+  <div id="stars2"></div>
+  <div id="stars3"></div>
+
+  <main class="app-shell">
+    <button id="home-btn" class="ghost-btn hidden home-back-btn" type="button">На дашборд</button>
+
+    <section id="dashboard-view" class="view">
+      <div id="dashboard-root" class="glass saved-list"></div>
+    </section>
+
+    <section id="achievements-view" class="view hidden">
+      <div class="glass saved-list">
+        <div class="section-head saved-list-head">
+          <h2>Достижения</h2>
+          <button id="back-from-achievements-btn" class="ghost-btn" type="button">Назад</button>
+        </div>
+        <div id="achievements-root" class="saved-list-body"></div>
+      </div>
+    </section>
+
+    <section id="thoughts-view" class="view hidden">
+      <div class="thoughts-actions-grid">
+        <button id="open-thought-entry-btn" class="glass thoughts-action-card" type="button">
+          <span class="thoughts-action-title">Новая запись</span>
+        </button>
+        <button id="open-thought-history-btn" class="glass thoughts-action-card" type="button">
+          <span class="thoughts-action-title">Мои записи</span>
+        </button>
+        <button id="open-thought-export-btn" class="glass thoughts-action-card" type="button">
+          <span class="thoughts-action-title">Скачать</span>
+        </button>
+        <button id="open-thought-bulk-delete-btn" class="glass thoughts-action-card" type="button">
+          <span class="thoughts-action-title">Удалить</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="thoughts-create-view" class="view hidden">
+      <div id="thoughts-entry-root"></div>
+    </section>
+
+    <section id="thoughts-history-view" class="view hidden">
+      <div class="glass saved-list">
+        <div class="section-head saved-list-head">
+          <h2>Мои записи</h2>
+          <button id="back-to-thoughts-btn" class="ghost-btn" type="button">Назад</button>
+        </div>
+        <div class="saved-filter-group" id="thoughts-history-filters">
+          <label class="saved-filter-option">
+            <input id="filter-situation" type="checkbox" checked>
+            <span>Ситуация</span>
+          </label>
+          <label class="saved-filter-option">
+            <input id="filter-automatic-thought" type="checkbox" checked>
+            <span>Автоматическая мысль</span>
+          </label>
+          <label class="saved-filter-option">
+            <input id="filter-emotions" type="checkbox" checked>
+            <span>Эмоции</span>
+          </label>
+        </div>
+        <div class="field saved-search">
+          <label for="thoughts-history-search">Поиск по записям</label>
+          <input id="thoughts-history-search" type="text" placeholder="Введите часть ситуации, мысли или заметки">
+        </div>
+        <div id="thoughts-history-list" class="saved-list-body"></div>
+      </div>
+    </section>
+
+    <section id="thought-record-view" class="view hidden">
+      <div class="glass saved-list">
+        <div class="section-head saved-list-head">
+          <h2>Запись</h2>
+          <div class="saved-item-actions">
+            <button id="delete-thought-record-btn" class="ghost-btn danger-btn" type="button">Удалить запись</button>
+            <button id="download-thought-record-btn" class="ghost-btn" type="button">Скачать Excel</button>
+            <button id="back-to-history-btn" class="ghost-btn" type="button">К списку</button>
+          </div>
+        </div>
+        <div id="thought-record-detail"></div>
+      </div>
+    </section>
+
+    <section id="thoughts-export-view" class="view hidden">
+      <div class="glass saved-list">
+        <div class="section-head saved-list-head">
+          <h2>Скачать записи</h2>
+          <button id="back-to-thoughts-from-export-btn" class="ghost-btn" type="button">Назад</button>
+        </div>
+        <div class="saved-filter-group period-chips">
+          <label class="saved-filter-option"><input type="radio" name="thought-export-range" value="week" checked><span>За неделю</span></label>
+          <label class="saved-filter-option"><input type="radio" name="thought-export-range" value="month"><span>За месяц</span></label>
+          <label class="saved-filter-option"><input type="radio" name="thought-export-range" value="all"><span>За весь период</span></label>
+          <label class="saved-filter-option"><input type="radio" name="thought-export-range" value="custom"><span>За период</span></label>
+        </div>
+        <div id="thought-export-custom" class="period-custom hidden">
+          <div class="field">
+            <label for="thought-export-from">С даты</label>
+            <input id="thought-export-from" type="date">
+          </div>
+          <div class="field">
+            <label for="thought-export-to">По дату</label>
+            <input id="thought-export-to" type="date">
+          </div>
+        </div>
+        <button id="download-thoughts-period-btn" class="primary-btn" type="button">Скачать Excel</button>
+      </div>
+    </section>
+
+    <section id="thoughts-bulk-delete-view" class="view hidden">
+      <div class="glass saved-list">
+        <div class="section-head saved-list-head">
+          <h2>Удалить записи</h2>
+          <button id="back-to-thoughts-from-delete-btn" class="ghost-btn" type="button">Назад</button>
+        </div>
+        <div class="saved-filter-group period-chips">
+          <label class="saved-filter-option"><input type="radio" name="thought-delete-range" value="week" checked><span>За неделю</span></label>
+          <label class="saved-filter-option"><input type="radio" name="thought-delete-range" value="month"><span>За месяц</span></label>
+          <label class="saved-filter-option"><input type="radio" name="thought-delete-range" value="all"><span>За весь период</span></label>
+          <label class="saved-filter-option"><input type="radio" name="thought-delete-range" value="custom"><span>За период</span></label>
+        </div>
+        <div id="thought-delete-custom" class="period-custom hidden">
+          <div class="field">
+            <label for="thought-delete-from">С даты</label>
+            <input id="thought-delete-from" type="date">
+          </div>
+          <div class="field">
+            <label for="thought-delete-to">По дату</label>
+            <input id="thought-delete-to" type="date">
+          </div>
+        </div>
+        <button id="delete-thoughts-period-btn" class="ghost-btn danger-btn" type="button">Удалить выбранные записи</button>
+      </div>
+    </section>
+
+    <section id="exposure-view" class="view hidden">
+      <div class="thoughts-actions-grid">
+        <button id="open-exposure-entry-btn" class="glass thoughts-action-card" type="button">
+          <span class="thoughts-action-title">Новая запись</span>
+        </button>
+        <button id="open-exposure-history-btn" class="glass thoughts-action-card" type="button">
+          <span class="thoughts-action-title">Мои записи</span>
+        </button>
+        <button id="open-exposure-export-btn" class="glass thoughts-action-card" type="button">
+          <span class="thoughts-action-title">Скачать</span>
+        </button>
+        <button id="open-exposure-bulk-delete-btn" class="glass thoughts-action-card" type="button">
+          <span class="thoughts-action-title">Удалить</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="exposure-create-view" class="view hidden">
+      <div id="exposure-entry-root"></div>
+    </section>
+
+    <section id="exposure-history-view" class="view hidden">
+      <div class="glass saved-list">
+        <div class="section-head saved-list-head">
+          <h2>Мои записи</h2>
+          <button id="back-to-exposure-btn" class="ghost-btn" type="button">Назад</button>
+        </div>
+        <div class="saved-filter-group" id="exposure-history-filters">
+          <label class="saved-filter-option">
+            <input type="radio" name="exposure-status-filter" value="all" checked>
+            <span>Все</span>
+          </label>
+          <label class="saved-filter-option">
+            <input type="radio" name="exposure-status-filter" value="expected">
+            <span>Ожидаемые</span>
+          </label>
+          <label class="saved-filter-option">
+            <input type="radio" name="exposure-status-filter" value="past">
+            <span>Прошедшие</span>
+          </label>
+          <label class="saved-filter-option">
+            <input type="radio" name="exposure-status-filter" value="completed">
+            <span>Завершенные</span>
+          </label>
+        </div>
+        <div class="field saved-search">
+          <label for="exposure-history-search">Поиск по записям</label>
+          <input id="exposure-history-search" type="text" placeholder="Введите часть ситуации, ожидания или итога">
+        </div>
+        <div id="exposure-history-list" class="saved-list-body"></div>
+      </div>
+    </section>
+
+    <section id="exposure-review-view" class="view hidden">
+      <div class="glass saved-list">
+        <div class="section-head saved-list-head">
+          <h2>Проработка записи</h2>
+          <button id="back-to-exposure-history-btn" class="ghost-btn" type="button">К списку</button>
+        </div>
+        <div id="exposure-review-root"></div>
+      </div>
+    </section>
+
+    <section id="exposure-export-view" class="view hidden">
+      <div class="glass saved-list">
+        <div class="section-head saved-list-head">
+          <h2>Скачать записи</h2>
+          <button id="back-to-exposure-from-export-btn" class="ghost-btn" type="button">Назад</button>
+        </div>
+        <div class="saved-filter-group period-chips">
+          <label class="saved-filter-option"><input type="radio" name="exposure-export-range" value="week" checked><span>За неделю</span></label>
+          <label class="saved-filter-option"><input type="radio" name="exposure-export-range" value="month"><span>За месяц</span></label>
+          <label class="saved-filter-option"><input type="radio" name="exposure-export-range" value="all"><span>За весь период</span></label>
+          <label class="saved-filter-option"><input type="radio" name="exposure-export-range" value="custom"><span>За период</span></label>
+        </div>
+        <div id="exposure-export-custom" class="period-custom hidden">
+          <div class="field">
+            <label for="exposure-export-from">С даты</label>
+            <input id="exposure-export-from" type="date">
+          </div>
+          <div class="field">
+            <label for="exposure-export-to">По дату</label>
+            <input id="exposure-export-to" type="date">
+          </div>
+        </div>
+        <button id="download-exposure-period-btn" class="primary-btn" type="button">Скачать Excel</button>
+      </div>
+    </section>
+
+    <section id="exposure-bulk-delete-view" class="view hidden">
+      <div class="glass saved-list">
+        <div class="section-head saved-list-head">
+          <h2>Удалить записи</h2>
+          <button id="back-to-exposure-from-delete-btn" class="ghost-btn" type="button">Назад</button>
+        </div>
+        <div class="saved-filter-group period-chips">
+          <label class="saved-filter-option"><input type="radio" name="exposure-delete-range" value="week" checked><span>За неделю</span></label>
+          <label class="saved-filter-option"><input type="radio" name="exposure-delete-range" value="month"><span>За месяц</span></label>
+          <label class="saved-filter-option"><input type="radio" name="exposure-delete-range" value="all"><span>За весь период</span></label>
+          <label class="saved-filter-option"><input type="radio" name="exposure-delete-range" value="custom"><span>За период</span></label>
+        </div>
+        <div id="exposure-delete-custom" class="period-custom hidden">
+          <div class="field">
+            <label for="exposure-delete-from">С даты</label>
+            <input id="exposure-delete-from" type="date">
+          </div>
+          <div class="field">
+            <label for="exposure-delete-to">По дату</label>
+            <input id="exposure-delete-to" type="date">
+          </div>
+        </div>
+        <button id="delete-exposure-period-btn" class="ghost-btn danger-btn" type="button">Удалить выбранные записи</button>
+      </div>
+    </section>
+
+    <section id="act-view" class="view hidden">
+      <div class="glass saved-list">
+        <div class="section-head saved-list-head">
+          <h2>АКТ карточки</h2>
+        </div>
+        <div class="wizard-actions act-actions">
+          <button id="open-act-case-btn" class="primary-btn" type="button">Получить карточку</button>
+          <button id="open-act-case-extra-btn" class="ghost-btn hidden" type="button">Получить еще</button>
+        </div>
+        <div id="act-last-card" class="summary hidden"></div>
+        <div id="act-progress" class="saved-list-body"></div>
+      </div>
+    </section>
+
+    <section id="act-collection-view" class="view hidden">
+      <div class="glass saved-list">
+        <div class="section-head saved-list-head">
+          <h2 id="act-collection-title">Коллекция</h2>
+          <button id="back-to-act-btn" class="ghost-btn" type="button">Назад</button>
+        </div>
+        <div id="act-collection-grid" class="act-collection-grid"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="./automatic-thought-help.js?v=1"></script>
+  <script src="./app.js?v=42"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+---
+description: Create rotating PWA backups after every code change
+alwaysApply: true
+---
+
+# Rotating Backups (Required)
+
+- After every code-edit step, run:
+  - `powershell -ExecutionPolicy Bypass -File "scripts/rotate-pwa-backup.ps1"`
+- Keep exactly 15 rotating slots:
+  - `PWA_backup_slot_01.zip` ... `PWA_backup_slot_15.zip`
+  - Slot 16 overwrites slot 01.
+- If backup command fails, stop and report the error before continuing.

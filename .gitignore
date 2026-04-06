@@ -1,0 +1,11 @@
+.env
+*.db
+*.xlsx
+temp/
+__pycache__/
+*.pyc
+venv/
+backups/
+*.zip
+bot.log
+*.log
