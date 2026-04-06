@@ -538,12 +538,51 @@
             position: relative;
             width: 100%;
             max-width: 720px;
-            height: min(58vh, 480px);
-            min-height: 280px;
             display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            touch-action: pan-y;
+        }
+
+        .carousel-3d-controls {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: row;
             align-items: center;
             justify-content: center;
-            touch-action: none;
+            gap: clamp(1.5rem, 5vw, 2.75rem);
+            padding: 0.65rem 0 0.15rem;
+        }
+
+        .carousel-3d-nav {
+            appearance: none;
+            border: none;
+            background: transparent;
+            color: #e8eaef;
+            font-size: clamp(1.75rem, 5vw, 2.25rem);
+            font-weight: 300;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            margin: 0;
+            -webkit-tap-highlight-color: transparent;
+            transition: color 0.2s ease, opacity 0.2s ease, transform 0.12s ease;
+            text-shadow: 0 1px 10px rgba(0, 0, 0, 0.65);
+        }
+
+        .carousel-3d-nav:hover {
+            color: #ffffff;
+            opacity: 0.95;
+        }
+
+        .carousel-3d-nav:focus-visible {
+            outline: 2px solid rgba(120, 180, 255, 0.85);
+            outline-offset: 3px;
+            border-radius: 2px;
+        }
+
+        .carousel-3d-nav:active {
+            transform: scale(0.94);
         }
 
         /* Ширина блока = только центральная колонка: боковые right:100% / left:100% примыкают к ней без зазора */
@@ -551,10 +590,12 @@
             position: relative;
             width: fit-content;
             max-width: 100%;
-            height: 100%;
+            height: min(58vh, 480px);
+            min-height: 280px;
             margin: 0 auto;
             perspective: 250px;
             transform-style: preserve-3d;
+            touch-action: pan-y;
         }
 
         .carousel-3d-wrapper {
@@ -693,9 +734,15 @@
             .wrapper-3d-root {
                 width: 100%;
                 max-width: none;
-                height: min(58vh, 480px);
+                touch-action: pan-y;
+            }
+
+            .wrapper-3d-inner {
                 min-height: 260px;
-                touch-action: manipulation;
+            }
+
+            .carousel-3d-nav {
+                font-size: clamp(1.5rem, 5.5vw, 2rem);
             }
 
             .slide-3d__vga {
@@ -720,7 +767,7 @@
         }
 
         @media (max-width: 480px) {
-            .wrapper-3d-root {
+            .wrapper-3d-inner {
                 height: min(52vh, 420px);
                 min-height: 220px;
             }
@@ -1662,8 +1709,8 @@
         <section id="platform" aria-labelledby="platform-heading">
             <div class="platform-section__inner">
                 <h2 id="platform-heading" class="platform-section__title">Что мы предлагаем?</h2>
-                <div class="wrapper-3d-root" id="platform3dWrapper">
-                    <div class="wrapper-3d-inner">
+                <div class="wrapper-3d-root" id="platform3dWrapper" role="region" aria-roledescription="карусель" aria-label="Слайды платформы">
+                    <div class="wrapper-3d-inner" id="platform3dSwipeArea">
                         <div class="carousel-3d-wrapper carousel-3d-center">
                             <div class="carousel-3d-track" id="platform3dCenter"></div>
                         </div>
@@ -1673,6 +1720,10 @@
                         <div class="carousel-3d-wrapper carousel-3d-right">
                             <div class="carousel-3d-track" id="platform3dRight"></div>
                         </div>
+                    </div>
+                    <div class="carousel-3d-controls">
+                        <button type="button" class="carousel-3d-nav carousel-3d-nav--prev" id="platform3dPrev" aria-label="Предыдущий слайд">‹</button>
+                        <button type="button" class="carousel-3d-nav carousel-3d-nav--next" id="platform3dNext" aria-label="Следующий слайд">›</button>
                     </div>
                 </div>
             </div>
@@ -2072,10 +2123,13 @@
                 },
             ];
             const wrapper = document.getElementById("platform3dWrapper");
+            const swipeArea = document.getElementById("platform3dSwipeArea");
+            const btnPrev = document.getElementById("platform3dPrev");
+            const btnNext = document.getElementById("platform3dNext");
             const left = document.getElementById("platform3dLeft");
             const center = document.getElementById("platform3dCenter");
             const right = document.getElementById("platform3dRight");
-            if (!wrapper || !left || !center || !right) return;
+            if (!wrapper || !swipeArea || !left || !center || !right || !btnPrev || !btnNext) return;
 
             function fillTrack(el) {
                 PLATFORM_3D_SLIDES.forEach((s) => {
@@ -2101,19 +2155,8 @@
             fillTrack(center);
             fillTrack(right);
 
-            const slidesCount = PLATFORM_3D_SLIDES.length - 1;
-
-            function edgePadding() {
-                const iw = window.innerWidth;
-                if (iw <= 480) return 16;
-                if (iw <= 768) return 28;
-                if (iw <= 1024) return 72;
-                return 140;
-            }
-
-            function mapRange(x, inMin, inMax, outMin, outMax) {
-                return ((x - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
-            }
+            const maxIndex = PLATFORM_3D_SLIDES.length - 1;
+            let currentIndex = 0;
 
             function applyPercent(percent) {
                 left.style.transform = `translateX(${percent}%)`;
@@ -2121,19 +2164,17 @@
                 right.style.transform = `translateX(${percent - 200}%)`;
             }
 
-            function setFromClientX(clientX) {
-                const pad = edgePadding();
-                const rect = wrapper.getBoundingClientRect();
-                const w = rect.width - pad * 2;
-                if (w <= 0) return;
-                const mouseX = Math.min(Math.max(clientX - rect.left - pad, 0), w);
-                const rawPercent = mapRange(mouseX, 0, w, 100 - 100 * slidesCount, 100);
-                applyPercent(Math.round(rawPercent));
+            function goTo(index) {
+                currentIndex = ((index % (maxIndex + 1)) + (maxIndex + 1)) % (maxIndex + 1);
+                applyPercent(100 - 100 * currentIndex);
             }
 
-            function centerInitial() {
-                const rect = wrapper.getBoundingClientRect();
-                if (rect.width > 0) setFromClientX(rect.left + rect.width / 2);
+            function goNext() {
+                goTo(currentIndex + 1);
+            }
+
+            function goPrev() {
+                goTo(currentIndex - 1);
             }
 
             const tracks = [left, center, right];
@@ -2141,38 +2182,47 @@
                 tracks.forEach((el) => {
                     el.style.transition = "none";
                 });
-                applyPercent(-100);
-                return;
             }
 
-            let moveRaf = null;
-            let pendingClientX = null;
-            function schedulePointerMove(clientX) {
-                pendingClientX = clientX;
-                if (moveRaf != null) return;
-                moveRaf = requestAnimationFrame(() => {
-                    moveRaf = null;
-                    if (pendingClientX != null) setFromClientX(pendingClientX);
-                });
+            btnPrev.addEventListener("click", () => goPrev());
+            btnNext.addEventListener("click", () => goNext());
+
+            const SWIPE_MIN_PX = 48;
+            let swipePtrId = null;
+            let swipeStartX = 0;
+            let swipeStartY = 0;
+
+            function onPointerDown(e) {
+                if (e.pointerType === "mouse" && e.button !== 0) return;
+                if (e.target.closest(".carousel-3d-nav")) return;
+                swipePtrId = e.pointerId;
+                swipeStartX = e.clientX;
+                swipeStartY = e.clientY;
+                try {
+                    swipeArea.setPointerCapture(e.pointerId);
+                } catch (_) {}
             }
-            wrapper.addEventListener("mousemove", (e) => schedulePointerMove(e.clientX));
-            wrapper.addEventListener(
-                "touchstart",
-                (e) => {
-                    if (e.touches[0]) schedulePointerMove(e.touches[0].clientX);
-                },
-                { passive: true }
-            );
-            wrapper.addEventListener(
-                "touchmove",
-                (e) => {
-                    if (e.touches[0]) schedulePointerMove(e.touches[0].clientX);
-                },
-                { passive: true }
-            );
-            window.addEventListener("resize", () => centerInitial());
-            window.addEventListener("load", () => centerInitial());
-            requestAnimationFrame(() => requestAnimationFrame(centerInitial));
+
+            function onPointerUp(e) {
+                if (swipePtrId == null || e.pointerId !== swipePtrId) return;
+                swipePtrId = null;
+                const dx = e.clientX - swipeStartX;
+                const dy = e.clientY - swipeStartY;
+                if (Math.abs(dx) < SWIPE_MIN_PX || Math.abs(dx) <= Math.abs(dy)) return;
+                if (dx < 0) goNext();
+                else goPrev();
+            }
+
+            function onPointerCancel(e) {
+                if (e.pointerId === swipePtrId) swipePtrId = null;
+            }
+
+            swipeArea.addEventListener("pointerdown", onPointerDown);
+            swipeArea.addEventListener("pointerup", onPointerUp);
+            swipeArea.addEventListener("pointercancel", onPointerCancel);
+
+            window.addEventListener("resize", () => goTo(currentIndex));
+            goTo(0);
         })();
 
         // Запускаем навигацию для вертикального меню
