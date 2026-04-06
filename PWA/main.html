@@ -904,6 +904,27 @@
             z-index: 1;
         }
 
+        .about-crawl-progress-hud {
+            position: absolute;
+            top: max(0.45rem, env(safe-area-inset-top, 0px));
+            right: max(0.45rem, env(safe-area-inset-right, 0px));
+            z-index: 6;
+            font-family: "Rubik Mono One", ui-monospace, monospace;
+            font-size: clamp(0.62rem, 2.4vw, 0.82rem);
+            font-weight: 400;
+            color: rgba(255, 230, 120, 0.92);
+            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.95), 0 0 1px rgba(0, 0, 0, 1);
+            pointer-events: none;
+            letter-spacing: 0.06em;
+            line-height: 1;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        .about-credits-viewport.about-credits--manual-crawl .about-crawl-progress-hud {
+            opacity: 1;
+        }
+
         .about-starwars-titles {
             position: absolute;
             width: min(10em, calc(100% - 2.5rem));
@@ -950,6 +971,37 @@
 
         .about-credits-viewport.about-credits-anim--active .about-starwars-titlecontent {
             animation: aboutStarwarsCrawl var(--about-crawl-dur, 700s) linear var(--crawl-delay, 7s) infinite;
+        }
+
+        /* Ручная прокрутка титров (колесо / свайп): та же траектория, что у keyframes (100% → -280%) */
+        .about-credits-viewport.about-credits--manual-crawl .about-starwars-titlecontent {
+            animation: none !important;
+            top: calc(100% - 380% * var(--crawl-progress, 0));
+        }
+
+        .about-credits-viewport.about-credits--manual-crawl .about-credits-plane {
+            touch-action: none;
+            cursor: ns-resize;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .about-credits-viewport.about-credits--scroll-unlocked .about-credits-plane {
+            touch-action: pan-y;
+            cursor: auto;
+        }
+
+        /* Фиксация страницы: титры по центру экрана, скролл только внутри титров до разблокировки */
+        html.crawl-scroll-lock,
+        body.crawl-scroll-lock {
+            overflow: hidden !important;
+        }
+
+        body.crawl-scroll-lock {
+            position: fixed;
+            left: 0;
+            right: 0;
+            width: 100%;
         }
 
         .about-starwars-titlecontent p {
@@ -1688,6 +1740,7 @@
                     <p id="aboutCrawlStart" class="about-crawl-start">«итак…»</p>
                     <h1 class="about-starwars-logo">НАЧНЕМ</h1>
                     <div class="about-credits-plane">
+                        <div id="aboutCrawlProgressHud" class="about-crawl-progress-hud" aria-hidden="true">0%</div>
                         <div class="about-starwars-titles" id="aboutStarwarsTitles">
                         <div class="about-starwars-titlecontent" id="aboutCrawlContent">
                         <p class="center about-crawl-ep">ЭПИЗОД I<br>СИЛА ВНУТРИ НАС</p>
@@ -1758,9 +1811,227 @@
             const content = document.getElementById("aboutCrawlContent");
             const view = content && content.closest(".about-credits-viewport");
             if (!content || !view) return;
+            if (view.classList.contains("about-credits--manual-crawl")) return;
             const sec =
                 36 * Math.min(50, Math.max(18, content.scrollHeight / 200));
             content.style.setProperty("--about-crawl-dur", `${sec}s`);
+        }
+
+        let crawlCenterPending = false;
+        let crawlScrollLockY = 0;
+        let crawlScrollLocked = false;
+        let crawlScrollUnlockDone = false;
+        const CRAWL_PROGRESS_FRAC = 3.8;
+        const UNLOCK_CRAWL_PROGRESS = 0.1;
+
+        function getUnlockProgressThreshold() {
+            return UNLOCK_CRAWL_PROGRESS;
+        }
+
+        /**
+         * Текущий прогресс титров 0…1 (отрисованное и целевое) и порог разблокировки.
+         * В консоли: getAboutCrawlProgress()
+         * В разметке: data-crawl-progress / data-crawl-target-progress на .about-credits-viewport
+         * В CSS: --crawl-progress на #aboutCrawlContent
+         */
+        function getAboutCrawlProgress() {
+            const el = document.querySelector(".about-credits-viewport");
+            const content = document.getElementById("aboutCrawlContent");
+            if (!el || !content) return null;
+            let p = parseFloat(el.dataset.crawlProgress, 10);
+            let t = parseFloat(el.dataset.crawlTargetProgress, 10);
+            if (!Number.isFinite(p)) {
+                const css = getComputedStyle(content).getPropertyValue("--crawl-progress").trim();
+                p = css ? parseFloat(css, 10) : 0;
+            }
+            if (!Number.isFinite(t)) t = p;
+            return {
+                progress: Math.max(0, Math.min(1, p)),
+                targetProgress: Math.max(0, Math.min(1, t)),
+                unlockThreshold: getUnlockProgressThreshold(),
+            };
+        }
+        window.getAboutCrawlProgress = getAboutCrawlProgress;
+
+        function lockCrawlBodyScroll() {
+            if (crawlScrollLocked) return;
+            crawlScrollLockY = window.scrollY || window.pageYOffset;
+            crawlScrollLocked = true;
+            document.documentElement.classList.add("crawl-scroll-lock");
+            document.body.classList.add("crawl-scroll-lock");
+            document.body.style.top = `-${crawlScrollLockY}px`;
+        }
+
+        function unlockCrawlBodyScroll() {
+            if (!crawlScrollLocked || crawlScrollUnlockDone) return;
+            crawlScrollUnlockDone = true;
+            crawlScrollLocked = false;
+            document.documentElement.classList.remove("crawl-scroll-lock");
+            document.body.classList.remove("crawl-scroll-lock");
+            document.body.style.removeProperty("top");
+            window.scrollTo({ top: crawlScrollLockY, left: 0, behavior: "instant" });
+            const cv = document.querySelector(".about-credits-viewport");
+            if (cv) cv.classList.add("about-credits--scroll-unlocked");
+        }
+
+        function tryUnlockFromCrawlProgress(p) {
+            if (!crawlScrollLocked || crawlScrollUnlockDone) return;
+            if (p + 1e-6 < getUnlockProgressThreshold()) return;
+            unlockCrawlBodyScroll();
+        }
+
+        function centerCreditsViewportThenLock(creditsView) {
+            function wheelBlock(e) {
+                if (!crawlCenterPending) return;
+                e.preventDefault();
+            }
+            function touchBlock(e) {
+                if (!crawlCenterPending) return;
+                e.preventDefault();
+            }
+            let finished = false;
+            const finish = () => {
+                if (finished) return;
+                finished = true;
+                crawlCenterPending = false;
+                window.removeEventListener("wheel", wheelBlock, true);
+                document.removeEventListener("touchmove", touchBlock, true);
+                lockCrawlBodyScroll();
+            };
+            crawlCenterPending = true;
+            window.addEventListener("wheel", wheelBlock, { passive: false, capture: true });
+            document.addEventListener("touchmove", touchBlock, { passive: false, capture: true });
+            requestAnimationFrame(() => {
+                creditsView.scrollIntoView({ block: "center", behavior: "smooth" });
+                window.addEventListener("scrollend", finish, { once: true });
+                setTimeout(finish, 780);
+            });
+        }
+
+        function initAboutCrawlManual(view) {
+            if (!view || view.dataset.crawlManualInit === "1") return;
+            view.dataset.crawlManualInit = "1";
+            const plane = view.querySelector(".about-credits-plane");
+            const content = document.getElementById("aboutCrawlContent");
+            const progressHud = document.getElementById("aboutCrawlProgressHud");
+            if (!plane || !content) return;
+
+            let progress = 0;
+            let targetProgress = 0;
+            let smoothRaf = null;
+            const SMOOTH = 0.085;
+
+            function titlesBox() {
+                const titles = content.closest(".about-starwars-titles");
+                const H = titles && titles.clientHeight > 0 ? titles.clientHeight : 1;
+                return { titles, H };
+            }
+
+            /** Один шаг progress ≈ одна визуальная строка (top меняется на ~lineHeight в масштабе сцены). */
+            function lineProgressStep() {
+                const { H } = titlesBox();
+                const cs = getComputedStyle(content);
+                let lh = parseFloat(cs.lineHeight);
+                if (!Number.isFinite(lh) || cs.lineHeight === "normal") {
+                    lh = parseFloat(cs.fontSize) * 1.35;
+                }
+                return lh / (CRAWL_PROGRESS_FRAC * H);
+            }
+
+            function wheelDeltaToLines(e) {
+                if (e.deltaMode === 1) return e.deltaY;
+                if (e.deltaMode === 2) return e.deltaY * 25;
+                return e.deltaY / 100;
+            }
+
+            function applyProgress() {
+                const clamped = Math.max(0, Math.min(1, progress));
+                const tClamped = Math.max(0, Math.min(1, targetProgress));
+                content.style.setProperty("--crawl-progress", String(clamped));
+                view.dataset.crawlProgress = String(clamped);
+                view.dataset.crawlTargetProgress = String(tClamped);
+                if (progressHud) {
+                    progressHud.textContent = `${Math.round(clamped * 100)}%`;
+                }
+            }
+
+            function smoothTick() {
+                smoothRaf = null;
+                const diff = targetProgress - progress;
+                if (Math.abs(diff) < 0.000035) {
+                    progress = targetProgress;
+                    applyProgress();
+                    tryUnlockFromCrawlProgress(progress);
+                    return;
+                }
+                progress += diff * SMOOTH;
+                applyProgress();
+                tryUnlockFromCrawlProgress(progress);
+                smoothRaf = requestAnimationFrame(smoothTick);
+            }
+
+            function kickSmooth() {
+                if (smoothRaf != null) return;
+                smoothRaf = requestAnimationFrame(smoothTick);
+            }
+
+            function onWheel(e) {
+                if (crawlScrollUnlockDone) return;
+                if (!view.classList.contains("about-credits-anim--active")) return;
+                const step = lineProgressStep();
+                const lines = wheelDeltaToLines(e);
+                const raw = targetProgress + lines * step;
+                const clamped = Math.max(0, Math.min(1, raw));
+                if (clamped === targetProgress && (raw < 0 || raw > 1)) return;
+                e.preventDefault();
+                targetProgress = clamped;
+                kickSmooth();
+            }
+
+            let touchLastY = null;
+            plane.addEventListener(
+                "touchstart",
+                (e) => {
+                    if (e.touches.length === 1) touchLastY = e.touches[0].clientY;
+                },
+                { passive: true }
+            );
+            plane.addEventListener(
+                "touchmove",
+                (e) => {
+                    if (crawlScrollUnlockDone) return;
+                    if (!view.classList.contains("about-credits-anim--active")) return;
+                    if (e.touches.length !== 1 || touchLastY == null) return;
+                    const y = e.touches[0].clientY;
+                    const dy = touchLastY - y;
+                    touchLastY = y;
+                    const { H } = titlesBox();
+                    const raw = targetProgress + dy / (CRAWL_PROGRESS_FRAC * H);
+                    const clamped = Math.max(0, Math.min(1, raw));
+                    if (clamped === targetProgress && (raw < 0 || raw > 1)) return;
+                    e.preventDefault();
+                    targetProgress = clamped;
+                    kickSmooth();
+                },
+                { passive: false }
+            );
+            plane.addEventListener(
+                "touchend",
+                () => {
+                    touchLastY = null;
+                },
+                { passive: true }
+            );
+            plane.addEventListener(
+                "touchcancel",
+                () => {
+                    touchLastY = null;
+                },
+                { passive: true }
+            );
+
+            plane.addEventListener("wheel", onWheel, { passive: false });
+            applyProgress();
         }
 
         (function setupAboutCreditsScrollReveal() {
@@ -1779,7 +2050,10 @@
                 (entries) => {
                     entries.forEach((entry) => {
                         if (!entry.isIntersecting) return;
+                        creditsView.classList.add("about-credits--manual-crawl");
+                        initAboutCrawlManual(creditsView);
                         activate();
+                        centerCreditsViewportThenLock(creditsView);
                         io.disconnect();
                     });
                 },
