@@ -39,17 +39,42 @@
 
         .hero {
             height: 100vh;
+            min-height: 100dvh;
             display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            position: sticky;
+            align-items: stretch;
+            justify-content: center;
+            position: fixed;
             top: 0;
-            z-index: 10;
+            left: 0;
+            width: 100%;
+            z-index: 8;
             pointer-events: none;
             overflow: visible;
             box-sizing: border-box;
+            padding: 0;
+            /* transform на fixed-слое не используем — иначе в части браузеров ломается привязка к viewport */
+        }
+
+        .hero-inner {
+            width: 100%;
+            max-width: 1600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            box-sizing: border-box;
             /* слева минимальный запас под меню; справа — от края экрана */
             padding: 0 min(2rem, 5vw) 0 clamp(4.75rem, 18vw, 11rem);
+        }
+
+        /* Резервирует высоту первого экрана в потоке прокрутки, пока титры закреплены к viewport */
+        .hero-spacer {
+            height: 100vh;
+            min-height: 100dvh;
+            width: 100%;
+            pointer-events: none;
         }
 
         .text-container {
@@ -209,12 +234,19 @@
                 height: 100dvh;
                 min-height: 100dvh;
                 max-height: 100dvh;
+            }
+            .hero-inner {
                 align-items: stretch;
                 justify-content: flex-start;
                 padding-left: max(clamp(3rem, 14vw, 5.5rem), env(safe-area-inset-left, 0px));
                 padding-right: max(min(1rem, 4vw), env(safe-area-inset-right, 0px));
                 padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
                 padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+            }
+            .hero-spacer {
+                height: 100dvh;
+                min-height: 100dvh;
+                max-height: 100dvh;
             }
             .text-container {
                 justify-content: flex-start;
@@ -246,7 +278,7 @@
 
         /* ---------- Адаптация по размеру экрана (ширина / высота / safe-area) ---------- */
         @media (max-width: 480px) {
-            .hero {
+            .hero-inner {
                 padding-left: max(clamp(2.75rem, 11vw, 4.25rem), env(safe-area-inset-left, 0px));
                 padding-right: max(min(0.75rem, 3vw), env(safe-area-inset-right, 0px));
             }
@@ -291,7 +323,7 @@
         }
 
         @media (min-width: 481px) and (max-width: 900px) {
-            .hero {
+            .hero-inner {
                 padding-left: clamp(4rem, 14vw, 8rem);
                 padding-right: max(min(1.25rem, 3vw), env(safe-area-inset-right, 0px));
             }
@@ -304,9 +336,16 @@
         @media (max-height: 520px) and (orientation: landscape) {
             .hero {
                 height: min(100dvh, 100vh);
+                min-height: min(100dvh, 100vh);
+            }
+            .hero-inner {
                 padding-top: env(safe-area-inset-top, 0px);
                 align-items: stretch;
                 justify-content: flex-start;
+            }
+            .hero-spacer {
+                height: min(100dvh, 100vh);
+                min-height: min(100dvh, 100vh);
             }
             .smoky-text {
                 font-size: clamp(1.15rem, 5.5vh, 2.75rem);
@@ -323,7 +362,7 @@
                 margin-left: auto;
                 margin-right: auto;
             }
-            .hero {
+            .hero-inner {
                 padding-left: clamp(6rem, 10vw, 12rem);
             }
         }
@@ -1490,18 +1529,22 @@
         </ul>
     </div>
 
-    <div class="scroll-content">
-        <div class="hero" id="home">
-            <div class="text-container" id="textContainer">
-                <div class="smoky-text" id="cosmicText">
-                    <div class="smoky-line"><span>т</span><span>ы</span></div>
-                    <div class="smoky-line"><span>э</span><span>т</span><span>о</span></div>
-                    <div class="smoky-line"><span>ц</span><span>е</span><span>л</span><span>а</span><span>я</span></div>
-                    <div class="smoky-line"><span>в</span><span>с</span><span>е</span><span>л</span><span>е</span><span>н</span><span>н</span><span>а</span><span>я</span></div>
-                </div>
+    <div class="hero">
+        <div class="hero-inner">
+        <div class="text-container" id="textContainer">
+            <div class="smoky-text" id="cosmicText">
+                <div class="smoky-line"><span>т</span><span>ы</span></div>
+                <div class="smoky-line"><span>э</span><span>т</span><span>о</span></div>
+                <div class="smoky-line"><span>ц</span><span>е</span><span>л</span><span>а</span><span>я</span></div>
+                <div class="smoky-line"><span>в</span><span>с</span><span>е</span><span>л</span><span>е</span><span>н</span><span>н</span><span>а</span><span>я</span></div>
             </div>
         </div>
-        
+        </div>
+    </div>
+
+    <div class="scroll-content">
+        <div id="home" class="hero-spacer" aria-hidden="true"></div>
+
         <section id="about">
             <div class="about-inner">
                 <div class="about-solar-system-outer">
@@ -1641,14 +1684,15 @@
             })();
         }
 
-        function updateTextAnimation(scrollY) {
+        /* Прозрачный fill + text-shadow в CSS; не затирать инлайном «none», иначе буквы невидимы. */
+        function resetHeroTextInlineStyles() {
             const textContainer = document.getElementById("textContainer");
             if (!textContainer) return;
-            textContainer.style.transform = "";
+            textContainer.style.removeProperty("transform");
             letters.forEach((letter) => {
-                letter.style.opacity = "1";
-                letter.style.textShadow = "none";
-                letter.style.transform = "";
+                letter.style.removeProperty("opacity");
+                letter.style.removeProperty("text-shadow");
+                letter.style.removeProperty("transform");
             });
         }
 
@@ -1781,7 +1825,6 @@
                     requestAnimationFrame(() => {
                         const y = lastScrollY;
                         updateStarsPosition(y);
-                        updateTextAnimation(y);
                         if (typeof updateNavFromScroll === "function") updateNavFromScroll(y);
                         ticking = false;
                     });
@@ -1796,7 +1839,7 @@
         });
         setTimeout(() => {
             updateStarsPosition(0);
-            updateTextAnimation(0);
+            resetHeroTextInlineStyles();
             refreshAboutCrawlKeyframes();
         }, 100);
         setTimeout(refreshAboutCrawlKeyframes, 400);

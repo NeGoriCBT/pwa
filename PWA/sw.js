@@ -1,4 +1,4 @@
-const CACHE_NAME = "cbt-pwa-v205";
+const CACHE_NAME = "cbt-pwa-v208";
 const ASSETS = [
   "./",
   "./main.html",
