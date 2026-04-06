@@ -347,6 +347,7 @@
                 margin-top: clamp(0.75rem, 3vw, 1.5rem);
             }
             .about-starwars-titles {
+                --crawl-fade-band: 40%;
                 width: min(9em, calc(100% - 1.5rem)) !important;
                 max-width: min(9em, 100%) !important;
                 height: min(50em, 72vh) !important;
@@ -926,6 +927,8 @@
         }
 
         .about-starwars-titles {
+            /* Верхняя полоса затухания: доля высоты блока титров (меньше % — выше «горизонт», больше читаемого текста) */
+            --crawl-fade-band: 44%;
             position: absolute;
             width: min(10em, calc(100% - 2.5rem));
             max-width: min(10em, 100%);
@@ -958,8 +961,9 @@
             left: 0;
             right: 0;
             top: 0;
-            bottom: 40%;
-            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.82) 38%, transparent 100%);
+            bottom: auto;
+            height: var(--crawl-fade-band, 44%);
+            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.78) 30%, transparent 100%);
             pointer-events: none;
             z-index: 2;
         }
