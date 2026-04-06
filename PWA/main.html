@@ -1825,16 +1825,35 @@
         const UNLOCK_CRAWL_PROGRESS = 0.1;
         const UNLOCK_CRAWL_PROGRESS_MOBILE = 1;
 
-        /** 100%: узкий экран ИЛИ телефон в ландшафте (>768px, но coarse pointer). Иначе 10% давало ранний unlock → «замирание» титров ~10–14% и сразу скролл страницы. */
+        /** 100%: узкий экран, coarse+планшет, тач-устройство (в т.ч. iPhone в ландшафте с fine). Десктоп только мышь — 10%. */
         function getUnlockProgressThreshold() {
             const narrow = window.matchMedia("(max-width: 768px)").matches;
             const phoneOrTabletTouch =
                 window.matchMedia("(pointer: coarse)").matches &&
                 window.matchMedia("(max-width: 1024px)").matches;
-            if (narrow || phoneOrTabletTouch) {
+            const touchNarrow =
+                typeof navigator !== "undefined" &&
+                typeof navigator.maxTouchPoints === "number" &&
+                navigator.maxTouchPoints > 0 &&
+                window.matchMedia("(max-width: 1280px)").matches;
+            if (narrow || phoneOrTabletTouch || touchNarrow) {
                 return UNLOCK_CRAWL_PROGRESS_MOBILE;
             }
             return UNLOCK_CRAWL_PROGRESS;
+        }
+
+        function readCrawlProgressFromDom() {
+            const c = document.getElementById("aboutCrawlContent");
+            if (!c) return 0;
+            const raw = getComputedStyle(c).getPropertyValue("--crawl-progress").trim();
+            const p = raw ? parseFloat(raw) : 0;
+            return Number.isFinite(p) ? Math.max(0, Math.min(1, p)) : 0;
+        }
+
+        function tryUnlockAfterLockApplied() {
+            queueMicrotask(() => {
+                tryUnlockFromCrawlProgress(readCrawlProgressFromDom());
+            });
         }
 
         /**
@@ -1869,6 +1888,7 @@
             document.documentElement.classList.add("crawl-scroll-lock");
             document.body.classList.add("crawl-scroll-lock");
             document.body.style.top = `-${crawlScrollLockY}px`;
+            tryUnlockAfterLockApplied();
         }
 
         function unlockCrawlBodyScroll() {
