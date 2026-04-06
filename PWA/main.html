@@ -346,23 +346,7 @@
             .about-credits-viewport {
                 margin-top: clamp(0.75rem, 3vw, 1.5rem);
             }
-            .about-starwars-titles {
-                --crawl-fade-band: 40%;
-                width: min(9em, calc(100% - 1.5rem)) !important;
-                max-width: min(9em, 100%) !important;
-                height: min(50em, 72vh) !important;
-                left: 50% !important;
-                margin-left: 0 !important;
-                transform: translateX(-50%) perspective(200px) rotateX(25deg) !important;
-                -webkit-transform: translateX(-50%) perspective(200px) rotateX(25deg) !important;
-                font-size: clamp(660%, 19vw, 900%) !important;
-            }
-            .about-starwars-titlecontent {
-                font-size: clamp(2.75rem, 12.5vw, 3.5rem);
-                line-height: 1.5;
-                padding-left: clamp(0.35rem, 2.5vw, 0.65rem);
-                padding-right: clamp(0.35rem, 2.5vw, 0.65rem);
-            }
+            /* Окно титров: те же width/height/font-size, что и базовый .about-starwars-titles (ПК) — см. блок ниже */
             section {
                 padding: clamp(1rem, 4vw, 2rem);
                 padding-left: max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-left, 0px));
@@ -901,7 +885,8 @@
             padding: 0;
             background: transparent;
             box-sizing: border-box;
-            overflow: hidden;
+            /* Обрезку текста титров даёт только .about-starwars-titles — по размеру самого блока */
+            overflow: visible;
             z-index: 1;
         }
 
@@ -927,21 +912,30 @@
         }
 
         .about-starwars-titles {
-            /* Верхняя полоса затухания: доля высоты блока титров (меньше % — выше «горизонт», больше читаемого текста) */
-            --crawl-fade-band: 44%;
+            /* Полоса маски у верхнего края; ~30% давало «горизонт» на трети блока — держим узко у верха */
+            --crawl-fade-band: 11%;
+            --crawl-fade-line: rgba(74, 222, 128, 0.92);
+            --crawl-fade-line-thickness: 2px;
+            /* Единое «окно» титров на всех ширинах (узкий экран не переопределяет em/vh отдельно) */
+            --crawl-window-w: min(10em, calc(100% - 2.5rem));
+            --crawl-window-h: 50em;
+            --crawl-window-font: clamp(800%, 18vw, 1150%);
             position: absolute;
-            width: min(10em, calc(100% - 2.5rem));
+            width: var(--crawl-window-w);
             max-width: min(10em, 100%);
-            height: 50em;
+            height: var(--crawl-window-h);
             bottom: 0;
             left: 50%;
             margin-left: 0;
-            font-size: clamp(800%, 18vw, 1150%);
+            font-size: var(--crawl-window-font);
             font-family: "Noto Sans", system-ui, sans-serif;
             font-weight: 700;
             text-align: justify;
             color: #ff6;
+            box-sizing: border-box;
+            /* Обрезка по border-box; без contain:paint — при rotateX давало ложный «срез» не у верха */
             overflow: hidden;
+            overflow: clip;
             transform-origin: center bottom;
             transform: translateX(-50%) perspective(300px) rotateX(25deg);
             -webkit-transform-origin: center bottom;
@@ -950,8 +944,11 @@
 
         @media (max-width: 768px) {
             .about-starwars-titles {
-                transform: translateX(-50%) perspective(200px) rotateX(25deg);
-                -webkit-transform: translateX(-50%) perspective(200px) rotateX(25deg);
+                transform: translateX(-50%) perspective(900px) rotateX(25deg);
+                -webkit-transform: translateX(-50%) perspective(900px) rotateX(25deg);
+            }
+            .about-starwars-titles::after {
+                display: none;
             }
         }
 
@@ -962,8 +959,13 @@
             right: 0;
             top: 0;
             bottom: auto;
-            height: var(--crawl-fade-band, 44%);
-            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.78) 30%, transparent 100%);
+            height: var(--crawl-fade-band, 11%);
+            background-image:
+                linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.72) 42%, transparent 100%),
+                linear-gradient(to bottom, var(--crawl-fade-line, rgba(74, 222, 128, 0.92)), var(--crawl-fade-line, rgba(74, 222, 128, 0.92)));
+            background-size: 100% 100%, 100% var(--crawl-fade-line-thickness, 2px);
+            background-position: 0 0, center bottom;
+            background-repeat: no-repeat;
             pointer-events: none;
             z-index: 2;
         }
