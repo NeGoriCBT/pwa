@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ты это целая вселенная | Dark Elegance Menu</title>
-    <!-- Rubik Mono One — заголовок / вводный текст; Noto Sans — crawl; Source Sans Pro — меню -->
-    <link href="https://fonts.googleapis.com/css2?family=Droid+Sans:wght@400;700&family=Noto+Sans:wght@400;700&family=Rubik+Mono+One&family=Source+Sans+Pro:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Finger Paint — секции; Rubik Mono One — заголовки; Noto Sans — crawl; Source Sans Pro / Open Sans — текст -->
+    <link href="https://fonts.googleapis.com/css2?family=Finger+Paint&family=Noto+Sans:wght@400;700&family=Open+Sans:wght@300;400;600;700&family=Rubik+Mono+One&family=Source+Sans+Pro:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         /* ---------- БАЗОВЫЙ СТИЛЬ (полностью сохранен из космической страницы) ---------- */
         :root {
@@ -26,7 +27,7 @@
             background-color: black;
             overflow-x: hidden;
             position: relative;
-            font-family: 'Source Sans Pro', sans-serif;
+            font-family: "Source Sans Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
         }
 
         /* Основной контент с прокруткой */
@@ -71,7 +72,7 @@
             /* «ты»: старт штор так, что продолжение (после паузы) — после конца вертикали «вселенная». Следующие слова — с шагом --curtain-line-gap (меньше полного цикла → шторы могут накладываться). */
             --ty-curtain-delay: calc(3 * var(--word-stagger) + var(--text-reveal-duration) - var(--curtain-phase1) - var(--curtain-pause));
             --curtain-line-gap: 0.45s;
-            font-family: "Rubik Mono One", monospace;
+            font-family: "Rubik Mono One", ui-monospace, monospace;
             font-size: clamp(1.75rem, 8vw, 5.75rem);
             font-weight: 400;
             line-height: 1.1;
@@ -363,7 +364,7 @@
             max-width: 600px;
         }
         section h2 {
-            font-family: 'Finger Paint', cursive;
+            font-family: "Finger Paint", cursive, system-ui;
             margin-bottom: 1.5rem;
             font-size: 2rem;
         }
@@ -372,254 +373,8 @@
             font-size: 1.1rem;
         }
 
-        /* ---------- Платформа: карусель возможностей CBT Diary ---------- */
+        /* ---------- Платформа: 3D-карусель «Что мы предлагаем?» ---------- */
         #platform {
-            min-height: min(100vh, 920px);
-            padding: clamp(1.5rem, 4vw, 3rem) 1rem;
-        }
-
-        #platform .platform-section__inner {
-            width: 100%;
-            max-width: 920px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.25rem;
-        }
-
-        #platform .platform-section__title {
-            font-family: "Rubik Mono One", monospace;
-            font-size: clamp(1.15rem, 3.8vw, 2rem);
-            font-weight: 400;
-            line-height: 1.15;
-            letter-spacing: 0.02em;
-            color: #fff;
-            margin: 0 0 0.25rem;
-            text-align: center;
-        }
-
-        #platform .carousel {
-            width: 100%;
-            height: min(70vh, 550px);
-            max-height: 550px;
-            display: flex;
-            max-width: 900px;
-            overflow: hidden;
-            position: relative;
-            background-color: var(--matte-surface);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-        }
-
-        #platform .carousel-item {
-            visibility: visible;
-            display: flex;
-            width: 100%;
-            height: 100%;
-            align-items: center;
-            justify-content: flex-end;
-            position: absolute;
-            left: 0;
-            top: 0;
-            background-color: var(--matte-surface);
-            flex-shrink: 0;
-            z-index: 0;
-            transition: 0.6s all linear;
-        }
-
-        #platform .carousel-item__info {
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            flex-direction: column;
-            order: 1;
-            left: 0;
-            margin: auto;
-            padding: 0 clamp(1rem, 3vw, 2.5rem);
-            width: 40%;
-            text-align: left;
-        }
-
-        #platform .carousel-item__image {
-            width: 60%;
-            height: 100%;
-            order: 2;
-            align-self: flex-end;
-            flex-basis: 60%;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-            position: relative;
-            transform: translateX(100%);
-            transition: 0.6s ease-in-out;
-        }
-
-        #platform .carousel-item__subtitle {
-            font-family: "Rubik Mono One", monospace;
-            letter-spacing: 0.12em;
-            font-size: clamp(0.55rem, 1.5vw, 0.7rem);
-            text-transform: uppercase;
-            margin: 0;
-            color: #7e7e7e;
-            font-weight: 400;
-            transform: translateY(25%);
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.4s ease-in-out;
-        }
-
-        #platform .carousel-item__title {
-            margin: 15px 0 0;
-            font-family: "Rubik Mono One", monospace;
-            font-size: clamp(1rem, 2.6vw, 2.1rem);
-            line-height: 1.12;
-            letter-spacing: 0.02em;
-            font-weight: 400;
-            color: #2c2c2c;
-            transform: translateY(25%);
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.6s ease-in-out;
-        }
-
-        #platform .carousel-item__description {
-            transform: translateY(25%);
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.6s ease-in-out;
-            margin-top: 1.25rem;
-            font-family: "Open Sans", sans-serif;
-            font-size: clamp(0.75rem, 1.65vw, 0.85rem);
-            color: #7e7e7e;
-            line-height: 1.65;
-            margin-bottom: 1.25rem;
-        }
-
-        #platform .carousel-item--1 .carousel-item__image { background-image: url("./image/1.png"); }
-        #platform .carousel-item--2 .carousel-item__image { background-image: url("./image/2.png"); }
-        #platform .carousel-item--3 .carousel-item__image { background-image: url("./image/3.png"); }
-        #platform .carousel-item--4 .carousel-item__image { background-image: url("./image/4.png"); }
-        #platform .carousel-item--5 .carousel-item__image { background-image: url("./image/5.png"); }
-
-        #platform .carousel-item__btn {
-            color: #2c2c2c;
-            font-family: "Open Sans", sans-serif;
-            letter-spacing: 0.2em;
-            font-size: 11px;
-            text-transform: uppercase;
-            margin: 0;
-            width: auto;
-            max-width: 100%;
-            font-weight: 700;
-            text-decoration: none;
-            display: inline-block;
-            transform: translateY(25%);
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.6s ease-in-out;
-            border-bottom: 1px solid #2c2c2c;
-            padding-bottom: 2px;
-        }
-
-        #platform .carousel-item__btn:hover {
-            color: #1f2a44;
-            border-color: #1f2a44;
-        }
-
-        #platform .carousel__nav {
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            z-index: 2;
-            background-color: var(--matte-surface);
-        }
-
-        #platform .carousel__icon {
-            display: inline-block;
-            vertical-align: middle;
-            width: 16px;
-            fill: #5d5d5d;
-        }
-
-        #platform .carousel__arrow {
-            cursor: pointer;
-            display: inline-block;
-            padding: 11px 15px;
-            position: relative;
-        }
-
-        #platform .carousel__arrow:nth-child(1)::after {
-            content: "";
-            right: -3px;
-            position: absolute;
-            width: 1px;
-            background-color: #b0b0b0;
-            height: 14px;
-            top: 50%;
-            margin-top: -7px;
-        }
-
-        #platform .carousel-item.active {
-            z-index: 1;
-            display: flex;
-            visibility: visible;
-        }
-
-        #platform .carousel-item.active .carousel-item__subtitle,
-        #platform .carousel-item.active .carousel-item__title,
-        #platform .carousel-item.active .carousel-item__description,
-        #platform .carousel-item.active .carousel-item__btn {
-            transform: translateY(0);
-            opacity: 1;
-            visibility: visible;
-            transition: 0.6s ease-in-out;
-        }
-
-        #platform .carousel-item.active .carousel-item__image {
-            transform: translateX(0);
-        }
-
-        @media (max-width: 700px) {
-            #platform .carousel {
-                height: auto;
-                min-height: 420px;
-                max-height: none;
-                flex-direction: column;
-            }
-
-            #platform .carousel-item {
-                flex-direction: column;
-                justify-content: flex-start;
-            }
-
-            #platform .carousel-item__image {
-                width: 100%;
-                height: 38vh;
-                min-height: 200px;
-                order: 1;
-                flex-basis: auto;
-                transform: translateX(0);
-                opacity: 0;
-            }
-
-            #platform .carousel-item__info {
-                width: 100%;
-                height: auto;
-                padding: 1.25rem 1.25rem 3.5rem;
-                order: 2;
-            }
-
-            #platform .carousel-item.active .carousel-item__image {
-                opacity: 1;
-            }
-
-            #platform .carousel-item:not(.active) .carousel-item__image {
-                transform: none;
-            }
-        }
-
-        /* ---------- Сравнение: 3D-карусель (тот же контент, что у #platform) ---------- */
-        #platform-3d {
             min-height: min(100vh, 920px);
             padding: clamp(1.5rem, 4vw, 3rem) 1rem clamp(2.5rem, 6vw, 4rem);
             background: transparent;
@@ -628,7 +383,7 @@
             z-index: 10;
         }
 
-        #platform-3d .platform-section__inner {
+        #platform .platform-section__inner {
             width: 100%;
             max-width: 960px;
             margin: 0 auto;
@@ -638,8 +393,8 @@
             gap: 0.75rem;
         }
 
-        #platform-3d .platform-section__title {
-            font-family: "Rubik Mono One", monospace;
+        #platform .platform-section__title {
+            font-family: "Rubik Mono One", ui-monospace, monospace;
             font-size: clamp(1rem, 3.2vw, 1.75rem);
             font-weight: 400;
             line-height: 1.2;
@@ -731,10 +486,12 @@
             justify-content: flex-end;
             padding: clamp(1rem, 3vw, 1.75rem);
             background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.18) 55%, transparent 85%);
-            font-family: "Rubik Mono One", monospace;
+            font-family: "Rubik Mono One", ui-monospace, monospace;
             font-weight: 400;
             text-align: left;
             pointer-events: none;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .slide-3d__vga-k {
@@ -776,12 +533,67 @@
             }
         }
 
-        @media (max-width: 640px) {
-            .wrapper-3d-root {
-                height: min(50vh, 380px);
+        @media (max-width: 768px) {
+            #platform {
+                min-height: auto;
+                padding-left: max(1rem, env(safe-area-inset-left, 0px));
+                padding-right: max(1rem, env(safe-area-inset-right, 0px));
+                padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
             }
+
+            #platform .platform-section__title {
+                font-size: clamp(0.9rem, 4.2vw, 1.4rem);
+                padding: 0 0.35rem;
+            }
+
+            .carousel-3d-left,
+            .carousel-3d-right {
+                display: none;
+            }
+
+            .wrapper-3d-inner {
+                perspective: none;
+                width: 100%;
+            }
+
             .carousel-3d-wrapper {
-                width: 88vw;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .wrapper-3d-root {
+                width: 100%;
+                max-width: none;
+                height: min(58vh, 480px);
+                min-height: 260px;
+                touch-action: manipulation;
+            }
+
+            .slide-3d__vga {
+                justify-content: center;
+                padding: 1rem max(0.75rem, env(safe-area-inset-left, 0px)) 1.25rem;
+            }
+
+            .slide-3d__vga-k {
+                font-size: clamp(0.75rem, 3.2vw, 1rem);
+            }
+
+            .slide-3d__vga-t {
+                font-size: clamp(0.95rem, 4vw, 1.35rem);
+            }
+
+            .slide-3d__vga-d {
+                font-size: clamp(0.78rem, 2.8vw, 0.95rem);
+                line-height: 1.4;
+                max-height: none;
+                overflow: visible;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .wrapper-3d-root {
+                height: min(52vh, 420px);
+                min-height: 220px;
             }
         }
 
@@ -921,7 +733,7 @@
             left: 50%;
             margin-left: 0;
             font-size: clamp(800%, 18vw, 1150%);
-            font-family: "Droid Sans", arial, verdana, sans-serif;
+            font-family: "Noto Sans", system-ui, sans-serif;
             font-weight: 700;
             text-align: justify;
             color: #ff6;
@@ -1061,7 +873,7 @@
         .about-solar-caption {
             position: absolute;
             z-index: 20;
-            font-family: "Rubik Mono One", monospace;
+            font-family: "Rubik Mono One", ui-monospace, monospace;
             font-size: clamp(0.5rem, 1.65vw + 0.2rem, 0.78rem);
             font-weight: 400;
             line-height: 1.35;
@@ -1700,85 +1512,10 @@
                     </div>
                 </div>
         </section>
-        
-        <section id="platform" class="platform-section" aria-labelledby="platform-heading">
-            <div class="platform-section__inner">
-                <h2 id="platform-heading" class="platform-section__title">Что предлагает платформа</h2>
-                <div class="carousel" id="platformCarousel">
-                    <div class="carousel__nav">
-                        <span id="platformMoveLeft" class="carousel__arrow" role="button" tabindex="0" aria-label="Предыдущий слайд">
-                            <svg class="carousel__icon" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"></path>
-                            </svg>
-                        </span>
-                        <span id="platformMoveRight" class="carousel__arrow" role="button" tabindex="0" aria-label="Следующий слайд">
-                            <svg class="carousel__icon" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"></path>
-                            </svg>
-                        </span>
-                    </div>
-                    <div class="carousel-item carousel-item--1">
-                        <div class="carousel-item__image" role="img" aria-hidden="true"></div>
-                        <div class="carousel-item__info">
-                            <div class="carousel-item__container">
-                                <h2 class="carousel-item__subtitle">Дневник мыслей</h2>
-                                <h3 class="carousel-item__title">КПТ у вас в кармане</h3>
-                                <p class="carousel-item__description">Ситуация, автоматическая мысль, эмоции и интенсивность. История с поиском и фильтрами, экспорт за период и справка по автоматическим мыслям — всё локально на устройстве.</p>
-                                <a href="./index.html?app=1" class="carousel-item__btn">Открыть приложение</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="carousel-item carousel-item--2">
-                        <div class="carousel-item__image" role="img" aria-hidden="true"></div>
-                        <div class="carousel-item__info">
-                            <div class="carousel-item__container">
-                                <h2 class="carousel-item__subtitle">Дневник экспозиции</h2>
-                                <h3 class="carousel-item__title">Шаг за шагом</h3>
-                                <p class="carousel-item__description">Планируйте и отмечайте задания экспозиции: ожидаемые, прошедшие и завершённые. История, экспорт и удобный обзор прогресса.</p>
-                                <a href="./index.html?app=1" class="carousel-item__btn">Открыть приложение</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="carousel-item carousel-item--3">
-                        <div class="carousel-item__image" role="img" aria-hidden="true"></div>
-                        <div class="carousel-item__info">
-                            <div class="carousel-item__container">
-                                <h2 class="carousel-item__subtitle">Дашборд</h2>
-                                <h3 class="carousel-item__title">Сводка и привычка</h3>
-                                <p class="carousel-item__description">Дни подряд, достижения, число записей и статистика по экспозиции. Быстрый переход к карточке дня и мотивация возвращаться.</p>
-                                <a href="./index.html?app=1" class="carousel-item__btn">Открыть приложение</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="carousel-item carousel-item--4">
-                        <div class="carousel-item__image" role="img" aria-hidden="true"></div>
-                        <div class="carousel-item__info">
-                            <div class="carousel-item__container">
-                                <h2 class="carousel-item__subtitle">ACT</h2>
-                                <h3 class="carousel-item__title">Карточка дня</h3>
-                                <p class="carousel-item__description">Практические карточки и коллекции — мини-задания для осознанности и действий в духе ACT, в том же приложении.</p>
-                                <a href="./index.html?app=1" class="carousel-item__btn">Открыть приложение</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="carousel-item carousel-item--5">
-                        <div class="carousel-item__image" role="img" aria-hidden="true"></div>
-                        <div class="carousel-item__info">
-                            <div class="carousel-item__container">
-                                <h2 class="carousel-item__subtitle">PWA</h2>
-                                <h3 class="carousel-item__title">Данные у вас</h3>
-                                <p class="carousel-item__description">Работает в браузере, ставится на экран как приложение. Записи хранятся локально; интернет нужен для загрузки и обновлений. Не заменяет приём у специалиста.</p>
-                                <a href="./index.html?app=1" class="carousel-item__btn">Открыть приложение</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <section id="platform-3d" aria-labelledby="platform-3d-heading">
+        <section id="platform" aria-labelledby="platform-heading">
             <div class="platform-section__inner">
-                <h2 id="platform-3d-heading" class="platform-section__title">Что мы предлагаем?</h2>
+                <h2 id="platform-heading" class="platform-section__title">Что мы предлагаем?</h2>
                 <div class="wrapper-3d-root" id="platform3dWrapper">
                     <div class="wrapper-3d-inner">
                         <div class="carousel-3d-wrapper carousel-3d-center">
@@ -2178,45 +1915,6 @@
             fsmenu.style.display = 'none';
         })();
         
-        (function initPlatformCarousel() {
-            const root = document.getElementById("platformCarousel");
-            if (!root) return;
-            const items = root.querySelectorAll(".carousel-item");
-            const btnL = document.getElementById("platformMoveLeft");
-            const btnR = document.getElementById("platformMoveRight");
-            const total = items.length;
-            if (!total) return;
-            let current = 0;
-
-            function goTo(next) {
-                let idx = next;
-                if (idx > total - 1) idx = 0;
-                if (idx < 0) idx = total - 1;
-                const prev = current;
-                current = idx;
-                items[prev]?.classList.remove("active");
-                items[current]?.classList.add("active");
-            }
-
-            btnR?.addEventListener("click", () => goTo(current + 1));
-            btnL?.addEventListener("click", () => goTo(current - 1));
-
-            btnR?.addEventListener("keydown", (e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    goTo(current + 1);
-                }
-            });
-            btnL?.addEventListener("keydown", (e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    goTo(current - 1);
-                }
-            });
-
-            items[0]?.classList.add("active");
-        })();
-
         (function initPlatform3dCarousel() {
             const PLATFORM_3D_SLIDES = [
                 {
@@ -2276,7 +1974,14 @@
             fillTrack(right);
 
             const slidesCount = PLATFORM_3D_SLIDES.length - 1;
-            const padding = 140;
+
+            function edgePadding() {
+                const iw = window.innerWidth;
+                if (iw <= 480) return 16;
+                if (iw <= 768) return 28;
+                if (iw <= 1024) return 72;
+                return 140;
+            }
 
             function mapRange(x, inMin, inMax, outMin, outMax) {
                 return ((x - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
@@ -2289,10 +1994,11 @@
             }
 
             function setFromClientX(clientX) {
+                const pad = edgePadding();
                 const rect = wrapper.getBoundingClientRect();
-                const w = rect.width - padding * 2;
+                const w = rect.width - pad * 2;
                 if (w <= 0) return;
-                const mouseX = Math.min(Math.max(clientX - rect.left - padding, 0), w);
+                const mouseX = Math.min(Math.max(clientX - rect.left - pad, 0), w);
                 const rawPercent = mapRange(mouseX, 0, w, 100 - 100 * slidesCount, 100);
                 applyPercent(Math.round(rawPercent));
             }
