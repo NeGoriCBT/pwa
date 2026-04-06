@@ -716,9 +716,14 @@
                 padding: 0 0.35rem;
             }
 
+            /* Не растягивать inner на 100% ширины: иначе боковые колонки (right:100% / left:100%) уезжают за край экрана и не видны */
             .wrapper-3d-inner {
                 perspective: 220px;
-                width: 100%;
+                width: fit-content;
+                max-width: 100%;
+                margin-left: auto;
+                margin-right: auto;
+                min-height: 260px;
             }
 
             .carousel-3d-left {
@@ -730,7 +735,7 @@
             }
 
             .carousel-3d-wrapper {
-                width: 100%;
+                width: min(72vw, 400px);
                 max-width: 100%;
             }
 
@@ -738,10 +743,6 @@
                 width: 100%;
                 max-width: none;
                 touch-action: pan-y;
-            }
-
-            .wrapper-3d-inner {
-                min-height: 260px;
             }
 
             .carousel-3d-nav {
